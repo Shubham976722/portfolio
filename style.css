@@ -566,7 +566,7 @@ nav ul li a:hover::after{
 
 @media (max-width: 768px) {
   .header-text {
-    margin-top: 45vh;   
+    margin-top: 40vh;   
   }
 }
 
@@ -574,4 +574,5 @@ nav ul li a:hover::after{
 .about-contact a:hover {
   text-decoration: underline;
 }
+
 
