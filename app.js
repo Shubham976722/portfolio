@@ -211,13 +211,17 @@
 
     let mouseX = 0;
     let mouseY = 0;
-    let targetX = 0;
-    let targetY = 0;
+    const updateParallax = (clientX, clientY) => {
+      mouseX = (clientX / window.innerWidth - 0.5) * 2;
+      mouseY = -(clientY / window.innerHeight - 0.5) * 2;
+    };
 
-    window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-      mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
-    });
+    window.addEventListener('mousemove', (e) => updateParallax(e.clientX, e.clientY));
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        updateParallax(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
 
     window.updateThreeTheme = function (colorHex) {
       const col = new THREE.Color(colorHex);
@@ -399,17 +403,24 @@
     let isWaving = false;
     let waveStartTime = 0;
 
-    window.addEventListener('mousemove', (e) => {
+    const updateRobotTarget = (clientX, clientY) => {
       const rect = container.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
 
-      const dx = (e.clientX - centerX) / (window.innerWidth / 2);
-      const dy = (e.clientY - centerY) / (window.innerHeight / 2);
+      const dx = (clientX - centerX) / (window.innerWidth / 2);
+      const dy = (clientY - centerY) / (window.innerHeight / 2);
 
       targetRotY = Math.max(-0.6, Math.min(0.6, dx * 0.8));
       targetRotX = Math.max(-0.4, Math.min(0.4, dy * 0.6));
-    });
+    };
+
+    window.addEventListener('mousemove', (e) => updateRobotTarget(e.clientX, e.clientY));
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches.length > 0) {
+        updateRobotTarget(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
 
     container.style.cursor = 'pointer';
     container.addEventListener('click', () => {
@@ -876,6 +887,18 @@
 
     if (closeBtn) closeBtn.addEventListener('click', closeMenu);
     links.forEach((link) => link.addEventListener('click', closeMenu));
+
+    document.addEventListener('click', (e) => {
+      if (mobileMenu && mobileMenu.classList.contains('open')) {
+        if (!mobileMenu.contains(e.target) && hamburger && !hamburger.contains(e.target)) {
+          closeMenu();
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
   }
 
   /* --------------------------------------------------
