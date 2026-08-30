@@ -833,18 +833,37 @@
     const navLinks = document.querySelectorAll('nav ul li a, .mobile-nav-link');
     const reveals = document.querySelectorAll('.reveal');
 
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -50px 0px' }
-    );
+    // Immediately activate elements on load
+    const activateVisible = () => {
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+      reveals.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= windowHeight * 0.95) {
+          el.classList.add('active');
+        }
+      });
+    };
 
-    reveals.forEach((el) => revealObserver.observe(el));
+    activateVisible();
+    setTimeout(activateVisible, 100);
+    setTimeout(activateVisible, 500);
+
+    if ('IntersectionObserver' in window) {
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('active');
+            }
+          });
+        },
+        { threshold: 0.05, rootMargin: '50px 0px 50px 0px' }
+      );
+
+      reveals.forEach((el) => revealObserver.observe(el));
+    } else {
+      window.addEventListener('scroll', activateVisible, { passive: true });
+    }
 
     window.addEventListener('scroll', () => {
       let currentSectionId = '';
@@ -862,7 +881,7 @@
           link.classList.add('active');
         }
       });
-    });
+    }, { passive: true });
   }
 
   /* --------------------------------------------------
@@ -1000,40 +1019,44 @@
    * INITIALIZE EVERYTHING ON DOM READY
    * -------------------------------------------------- */
   document.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('shubham_theme_idx');
-    if (savedTheme !== null) {
-      applyTheme(parseInt(savedTheme, 10));
-    } else {
-      applyTheme(0);
-    }
+    try {
+      const savedTheme = localStorage.getItem('shubham_theme_idx');
+      if (savedTheme !== null) {
+        applyTheme(parseInt(savedTheme, 10));
+      } else {
+        applyTheme(0);
+      }
+    } catch (e) {}
 
-    const themeBtn = document.getElementById('theme-toggle-btn');
-    if (themeBtn) {
-      themeBtn.addEventListener('click', () => {
-        applyTheme(currentThemeIdx + 1);
-        soundFX.success();
-      });
-    }
+    try {
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          applyTheme(currentThemeIdx + 1);
+          soundFX.success();
+        });
+      }
 
-    const soundBtn = document.getElementById('sound-toggle-btn');
-    if (soundBtn) {
-      soundBtn.addEventListener('click', () => {
-        const state = soundFX.toggle();
-        soundBtn.innerHTML = state ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
-        soundFX.hover();
-      });
-    }
+      const soundBtn = document.getElementById('sound-toggle-btn');
+      if (soundBtn) {
+        soundBtn.addEventListener('click', () => {
+          const state = soundFX.toggle();
+          soundBtn.innerHTML = state ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+          soundFX.hover();
+        });
+      }
+    } catch (e) {}
 
-    initThreeBackground();
-    initHero3DRobot();
-    initSparkyWidget();
-    init3DCardTilt();
-    initTypewriter();
-    initSkillsFilters();
-    initProjectModal();
-    initScrollObserver();
-    initMobileMenu();
-    initContactHelpers();
+    try { initThreeBackground(); } catch (e) { console.warn('ThreeBG error', e); }
+    try { initHero3DRobot(); } catch (e) { console.warn('Robot error', e); }
+    try { initSparkyWidget(); } catch (e) { console.warn('Sparky error', e); }
+    try { init3DCardTilt(); } catch (e) { console.warn('Tilt error', e); }
+    try { initTypewriter(); } catch (e) { console.warn('Typewriter error', e); }
+    try { initSkillsFilters(); } catch (e) { console.warn('Skills error', e); }
+    try { initProjectModal(); } catch (e) { console.warn('Modal error', e); }
+    try { initScrollObserver(); } catch (e) { console.warn('Observer error', e); }
+    try { initMobileMenu(); } catch (e) { console.warn('Menu error', e); }
+    try { initContactHelpers(); } catch (e) { console.warn('Contact error', e); }
   });
 
 })();
