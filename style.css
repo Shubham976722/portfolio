@@ -67,6 +67,17 @@ body {
   background: var(--primary);
 }
 
+/* SVG Icon Normalization (Font Awesome SVG compatibility) */
+svg.svg-inline--fa {
+  display: inline-block;
+  height: 1em;
+  width: auto;
+  max-width: 100%;
+  vertical-align: -0.125em;
+  overflow: visible;
+  fill: currentColor;
+}
+
 /* Background 3D Canvas (Passive, Non-Blocking) */
 #bg-canvas {
   position: fixed;
